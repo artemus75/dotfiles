@@ -45,8 +45,8 @@ disabled = false
 truncation_length = 3
 truncation_symbol = "…/"
 home_symbol = " ~"
-read_only_style = "197"
-read_only = "  "
+read_only_style = "red"
+read_only = " 🔒"
 format = "at [$path]($style)[$read_only]($read_only_style) "
 
 [git_branch]
@@ -74,7 +74,7 @@ deleted = " "
 [azure]
 disabled = false
 format = "on [$symbol($subscription)]($style) "
-symbol = "ﴃ "
+symbol = "  "
 style = "blue bold"
 
 [terraform]
@@ -87,7 +87,7 @@ format = "via [ vagrant $version]($style) "
 format = "via [ $context](bold blue) "
 
 [helm]
-format = "via [  $version](bold purple) "
+format = "via [⎈ $version](bold purple) "
 
 [python]
 symbol = " "
@@ -97,8 +97,11 @@ python_binary = "python3"
 format = "via [ $version](bold green) "
 disabled = true
 
+[pulumi]
+format = '[  ($version )$stack]($style)'
+
 [kubernetes]
-format = 'on [  $context\($namespace\)](bold purple) '
+format = 'on [☸ $context\($namespace\)](bold purple) '
 disabled = false
 #[kubernetes.context_aliases]
 # "dev.local.cluster.k8s" = "dev"
