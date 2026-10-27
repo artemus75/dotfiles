@@ -2,9 +2,9 @@
 
 # ══════════════════════════════════════════════════════════════════
 #  Starship – Catppuccin Macchiato
-#  Aufbau: [OS Nutzer ▶ Verzeichnis] (Git) (Sprachen) (Infrastruktur) (Uhrzeit)
-#  Optionale Segmente erscheinen nur, wenn sie etwas anzuzeigen haben.
-#  Die Symbole benötigen eine Nerd Font im Terminal.
+#  Layout: [OS user ▶ directory] (git) (languages) (infrastructure) (time)
+#  Optional segments only appear when they have something to show.
+#  The symbols require a Nerd Font in the terminal.
 # ══════════════════════════════════════════════════════════════════
 
 palette = 'catppuccin_macchiato'
@@ -30,7 +30,7 @@ $line_break\
 $character"""
 
 
-# ── Anfang der Zeile: Betriebssystem, Nutzer, Verzeichnis ─────────
+# ── Start of the line: operating system, user, directory ──────────
 
 [os]
 disabled = false
@@ -66,7 +66,7 @@ style_user = "bg:red fg:crust"
 style_root = "bg:red fg:crust"
 format = '[$user]($style)'
 
-# Rechnername nur in SSH-Sitzungen (z. B. auf Talos-Nodes oder Servern)
+# Hostname only in SSH sessions (e.g. on Talos nodes or servers)
 [hostname]
 ssh_only = true
 style = "bg:red fg:crust"
@@ -81,6 +81,7 @@ truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
+# English and German (localized) folder names
 "Documents" = "󰈙 "
 "Dokumente" = "󰈙 "
 "Downloads" = " "
@@ -105,7 +106,7 @@ style = "bg:yellow"
 format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
 
 
-# ── Programmiersprachen (grünes Segment) ──────────────────────────
+# ── Programming languages (green segment) ─────────────────────────
 
 [nodejs]
 symbol = ""
@@ -158,15 +159,15 @@ style = "bg:green"
 format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
 
 
-# ── Infrastruktur (blaues Segment) ────────────────────────────────
+# ── Infrastructure (blue segment) ─────────────────────────────────
 
 [docker_context]
 symbol = ""
 style = "bg:sapphire"
 format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
 
-# Kubernetes-Kontext: erscheint nur in Verzeichnissen mit Bezug zu Kubernetes
-# oder Terraform. Die drei detect_*-Zeilen löschen, um ihn überall zu sehen.
+# Kubernetes context: only shown in directories related to Kubernetes or
+# Terraform. Delete the three detect_* lines to show it everywhere.
 [kubernetes]
 disabled = false
 symbol = "󱃾"
@@ -176,7 +177,7 @@ detect_extensions = ['yaml', 'yml', 'tf']
 detect_files = ['Chart.yaml', 'kustomization.yaml', 'talosconfig', 'Dockerfile']
 detect_folders = ['k8s', 'kubernetes', 'manifests']
 
-# Talos-Kontexte heißen "admin@<cluster>"; angezeigt wird nur der Clustername
+# Talos contexts are named "admin@<cluster>"; only the cluster name is shown
 [[kubernetes.contexts]]
 context_pattern = 'admin@(?P<var_cluster>.+)'
 context_alias = '$var_cluster'
@@ -186,8 +187,8 @@ symbol = ""
 style = "bg:sapphire"
 format = '[[ $symbol( $workspace) ](fg:crust bg:sapphire)]($style)'
 
-# Azure-Subscription: standardmäßig aus (zeigt den Subscription-Namen an).
-# Zum Aktivieren disabled = false setzen.
+# Azure subscription: disabled by default (shows the subscription name).
+# Set disabled = false to enable it.
 [azure]
 disabled = true
 symbol = ""
@@ -201,7 +202,7 @@ format = '[[ $symbol $environment ](fg:crust bg:sapphire)]($style)'
 ignore_base = false
 
 
-# ── Uhrzeit, Laufzeit, Fehlercode, Eingabezeile ───────────────────
+# ── Time, duration, exit code, input line ─────────────────────────
 
 [time]
 disabled = false
@@ -218,7 +219,7 @@ format = "[  in $duration ]($style)"
 show_notifications = true
 min_time_to_notify = 45000
 
-# Exit-Code nur anzeigen, wenn der letzte Befehl fehlgeschlagen ist
+# Only show the exit code when the last command failed
 [status]
 disabled = false
 symbol = "✖"
@@ -238,7 +239,7 @@ vimcmd_replace_symbol = '[❮](bold fg:lavender)'
 vimcmd_visual_symbol = '[❮](bold fg:yellow)'
 
 
-# ── Farbpalette ───────────────────────────────────────────────────
+# ── Color palette ─────────────────────────────────────────────────
 
 [palettes.catppuccin_macchiato]
 rosewater = "#f4dbd6"

@@ -1,0 +1,164 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, do nothing
+[[ $- != *i* ]] && return
+
+
+# ──────────────────────────────────────────────────────────────
+# Helper functions
+# ──────────────────────────────────────────────────────────────
+
+# Check whether a program is installed
+_have() { command -v "$1" >/dev/null 2>&1; }
+
+# Add PATH entries without duplicates (safe when re-sourcing ~/.bashrc)
+path_append()  { case ":$PATH:" in *":$1:"*) ;; *) PATH="$PATH:$1" ;; esac; }
+path_prepend() { case ":$PATH:" in *":$1:"*) ;; *) PATH="$1:$PATH" ;; esac; }
+
+
+# ──────────────────────────────────────────────────────────────
+# Shell behavior and history
+# ──────────────────────────────────────────────────────────────
+shopt -s histappend        # append to the history on exit instead of overwriting it
+shopt -s checkwinsize      # re-check the window size after every command
+
+HISTSIZE=50000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups   # no duplicates, no commands with a leading space
+
+
+# ──────────────────────────────────────────────────────────────
+# PATH
+# ──────────────────────────────────────────────────────────────
+path_append "$HOME/.local/bin"
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/home/michael/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/michael/.lmstudio/bin"
+# End of LM Studio CLI section
+
+# opencode
+path_prepend "$HOME/.opencode/bin"
+
+export PATH
+
+
+# ──────────────────────────────────────────────────────────────
+# Colors: ls, grep, diff, ip, man pages
+# ──────────────────────────────────────────────────────────────
+if _have vivid; then
+  export LS_COLORS="$(vivid generate catppuccin-macchiato)"
+fi
+
+if _have eza; then
+  alias ls='eza --icons --group-directories-first'
+  alias ll='eza -lah --icons --git --group-directories-first'
+  alias lt='eza --tree --level=2 --icons'
+else
+  echo "Warning: eza is not installed" >&2
+  alias ls='ls --color=auto'
+  alias ll='ls -lah --color=auto'
+fi
+
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias ip='ip -color=auto'
+
+# Colored man pages via bat
+if _have bat; then
+  export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+  export MANROFFOPT="-c"
+fi
+
+
+# ──────────────────────────────────────────────────────────────
+# Status messages with emojis (for custom scripts and aliases)
+# ──────────────────────────────────────────────────────────────
+step()  { printf '\033[36m👉 %s\033[0m\n' "$*"; }
+info()  { printf '\033[34m📦 %s\033[0m\n' "$*"; }
+ok()    { printf '\033[32m✅ %s\033[0m\n' "$*"; }
+warn()  { printf '\033[33m⚠️  %s\033[0m\n' "$*"; }
+fail()  { printf '\033[31m❌ %s\033[0m\n' "$*"; }
+party() { printf '\033[35m🎉 %s\033[0m\n' "$*"; }
+
+
+# ──────────────────────────────────────────────────────────────
+# fzf (Catppuccin Macchiato)
+# ──────────────────────────────────────────────────────────────
+if _have fzf; then
+  export FZF_DEFAULT_OPTS="\
+--color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796 \
+--color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6 \
+--color=marker:#b7bdf8,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796 \
+--color=border:#6e738d,label:#cad3f5"
+
+  # Key bindings: Ctrl+R (history), Ctrl+T (files), Alt+C (change directory)
+  # Comment out these lines to keep the default history search.
+  [[ -f /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+  [[ -f /usr/share/fzf/completion.bash ]]   && source /usr/share/fzf/completion.bash
+fi
+
+
+# ──────────────────────────────────────────────────────────────
+# Kubernetes
+# ──────────────────────────────────────────────────────────────
+if _have kubecolor; then
+  alias kubectl='kubecolor'
+  alias k='kubecolor'
+else
+  alias k='kubectl'
+fi
+
+# Auto-completion (requires the bash-completion package)
+if _have kubectl; then
+  source <(command kubectl completion bash)
+  complete -o default -F __start_kubectl k
+  _have kubecolor && complete -o default -F __start_kubectl kubecolor
+fi
+
+
+# ──────────────────────────────────────────────────────────────
+# Talos
+# ──────────────────────────────────────────────────────────────
+#export TALOSCONFIG=/home/michael/.talos/config
+
+_have talosctl && source <(talosctl completion bash)
+
+# Interactive Talos context switcher via fzf
+talosctx() {
+  if ! _have talosctl || ! _have fzf; then
+    echo "talosctl and fzf are required." >&2
+    return 1
+  fi
+  local ctx
+  ctx=$(talosctl config contexts | tail -n +2 \
+    | awk '{for(i=1;i<=NF;i++) if($i!="*"){print $i; break}}' \
+    | fzf --height 40% --reverse --prompt="Talos Context > ")
+  if [ -n "$ctx" ]; then
+    talosctl config context "$ctx"
+  fi
+}
+
+
+# ──────────────────────────────────────────────────────────────
+# Miscellaneous
+# ──────────────────────────────────────────────────────────────
+
+# SSH agent socket (systemd user service)
+[[ -n "$XDG_RUNTIME_DIR" ]] && export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+# LibreOffice: use the GTK3 plugin for the UI
+export SAL_USE_VCLPLUGIN=gtk3
+
+
+# ──────────────────────────────────────────────────────────────
+# Prompt (always at the very end)
+# ──────────────────────────────────────────────────────────────
+if _have starship; then
+  eval "$(starship init bash)"
+fi
