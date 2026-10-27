@@ -1,122 +1,269 @@
-# ~/.config/starship.toml
+"$schema" = 'https://starship.rs/config-schema.json'
 
-# Inserts a blank line between shell prompts
+# ══════════════════════════════════════════════════════════════════
+#  Starship – Catppuccin Macchiato
+#  Aufbau: [OS Nutzer ▶ Verzeichnis] (Git) (Sprachen) (Infrastruktur) (Uhrzeit)
+#  Optionale Segmente erscheinen nur, wenn sie etwas anzuzeigen haben.
+#  Die Symbole benötigen eine Nerd Font im Terminal.
+# ══════════════════════════════════════════════════════════════════
+
+palette = 'catppuccin_macchiato'
 add_newline = true
+command_timeout = 1000
 
-# Change the default prompt format
-# format = """\
-# [╭╴](238)$env_var\
-# $all[╰─](238)$character"""
+format = """
+[](red)\
+$os\
+$username\
+$hostname\
+[ ](bg:red)\
+[](bg:peach fg:red)\
+$directory\
+[](fg:peach)\
+( [](fg:yellow)$git_branch$git_status[](fg:yellow))\
+( [](fg:green)$c$rust$golang$nodejs$bun$php$java$kotlin$haskell$python[](fg:green))\
+( [](fg:sapphire)$docker_context$kubernetes$terraform$azure$conda[](fg:sapphire))\
+( [](fg:lavender)$time[](fg:lavender))\
+$cmd_duration\
+$status\
+$line_break\
+$character"""
 
-format = """\
-[┌─](238)$env_var\
-[$all└─](238)$character"""
-right_format = """$time"""
 
-# Change the default prompt characters
-# [character]
-# success_symbol = "[](238)"
-# error_symbol = "[](238)"
-[character]
-success_symbol = "[❯](bold green) "
-error_symbol = "[✗](bold red) "
+# ── Anfang der Zeile: Betriebssystem, Nutzer, Verzeichnis ─────────
 
-# Shows an icon that should be included by zshrc script based on the distribution or os
-[env_var.STARSHIP_DISTRO]
-format = '[$env_value](bold white) '
-variable = "STARSHIP_DISTRO"
+[os]
 disabled = false
+style = "bg:red fg:crust"
 
-# Shows the username
+[os.symbols]
+Windows = " "
+Ubuntu = "󰕈 "
+SUSE = " "
+Raspbian = "󰐿 "
+Mint = "󰣭 "
+Macos = "󰀵 "
+Manjaro = " "
+Linux = "󰌽 "
+Gentoo = "󰣨 "
+Fedora = "󰣛 "
+Alpine = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = "󰣇 "
+Artix = "󰣇 "
+CachyOS = " "
+CentOS = " "
+Debian = "󰣚 "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Void = " "
+
 [username]
-style_user = "white bold"
-style_root = "black bold"
-format = "[$user]($style)[@](bold yellow)"
-disabled = false
 show_always = true
+style_user = "bg:red fg:crust"
+style_root = "bg:red fg:crust"
+format = '[$user]($style)'
 
-# Shows the hostname
+# Rechnername nur in SSH-Sitzungen (z. B. auf Talos-Nodes oder Servern)
 [hostname]
-ssh_only = false
-format = "[$hostname](white bold) "
-disabled = false
+ssh_only = true
+style = "bg:red fg:crust"
+format = '[@$hostname]($style)'
 
 [directory]
+style = "bg:peach fg:crust"
+read_only = " "
+read_only_style = "bg:peach fg:red"
+format = "[ $path]($style)[$read_only]($read_only_style)[ ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
-home_symbol = " ~"
-read_only_style = "red"
-read_only = " 🔒"
-format = "at [$path]($style)[$read_only]($read_only_style) "
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Dokumente" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Musik" = "󰝚 "
+"Pictures" = " "
+"Bilder" = " "
+"Developer" = "󰲋 "
+
+
+# ── Git ───────────────────────────────────────────────────────────
 
 [git_branch]
-symbol = " "
-format = "on [$symbol$branch]($style) "
-truncation_length = 4
-truncation_symbol = "…/"
-style = "bold green"
+symbol = ""
+style = "bg:yellow"
+truncation_length = 24
+truncation_symbol = "…"
+format = '[[ $symbol $branch ](fg:crust bg:yellow)]($style)'
 
 [git_status]
-format = '[\($all_status$ahead_behind\)]($style) '
-style = "bold green"
-conflicted = "🏳"
-up_to_date = " "
-untracked = " "
-ahead = "⇡${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-behind = "⇣${count}"
-stashed = " "
-modified = " "
-staged = '[++\($count\)](green)'
-renamed = "襁 "
-deleted = " "
+style = "bg:yellow"
+format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
 
-[azure]
-disabled = false
-format = "on [$symbol($subscription)]($style) "
-symbol = "  "
-style = "blue bold"
 
-[terraform]
-format = "via [ terraform $version]($style) 壟 [$workspace]($style) "
-
-[vagrant]
-format = "via [ vagrant $version]($style) "
-
-[docker_context]
-format = "via [ $context](bold blue) "
-
-[helm]
-format = "via [⎈ $version](bold purple) "
-
-[python]
-symbol = " "
-python_binary = "python3"
+# ── Programmiersprachen (grünes Segment) ──────────────────────────
 
 [nodejs]
-format = "via [ $version](bold green) "
-disabled = true
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
-[pulumi]
-format = '[  ($version )$stack]($style)'
+[bun]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 
+[c]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[php]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[java]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[kotlin]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[haskell]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[python]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+
+
+# ── Infrastruktur (blaues Segment) ────────────────────────────────
+
+[docker_context]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
+
+# Kubernetes-Kontext: erscheint nur in Verzeichnissen mit Bezug zu Kubernetes
+# oder Terraform. Die drei detect_*-Zeilen löschen, um ihn überall zu sehen.
 [kubernetes]
-format = 'on [☸ $context\($namespace\)](bold purple) '
 disabled = false
-#[kubernetes.context_aliases]
-# "dev.local.cluster.k8s" = "dev"
-# ".*/openshift-cluster/.*" = "openshift"
-# "gke_.*_(?P<cluster>[\\w-]+)" = "gke-$cluster"
+symbol = "󱃾"
+style = "bg:sapphire"
+format = '[[ $symbol $context( \($namespace\)) ](fg:crust bg:sapphire)]($style)'
+detect_extensions = ['yaml', 'yml', 'tf']
+detect_files = ['Chart.yaml', 'kustomization.yaml', 'talosconfig', 'Dockerfile']
+detect_folders = ['k8s', 'kubernetes', 'manifests']
 
-[memory_usage]
+# Talos-Kontexte heißen "admin@<cluster>"; angezeigt wird nur der Clustername
+[[kubernetes.contexts]]
+context_pattern = 'admin@(?P<var_cluster>.+)'
+context_alias = '$var_cluster'
+
+[terraform]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $workspace) ](fg:crust bg:sapphire)]($style)'
+
+# Azure-Subscription: standardmäßig aus (zeigt den Subscription-Namen an).
+# Zum Aktivieren disabled = false setzen.
+[azure]
 disabled = true
-threshold = -1
-symbol = " "
-style = "bold dimmed green"
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $subscription) ](fg:crust bg:sapphire)]($style)'
+
+[conda]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol $environment ](fg:crust bg:sapphire)]($style)'
+ignore_base = false
+
+
+# ── Uhrzeit, Laufzeit, Fehlercode, Eingabezeile ───────────────────
 
 [time]
 disabled = false
-format = '🕙[\[ $time \]]($style) '
-time_format = "%T"
-utc_time_offset = "local"
-#time_range = "10:00:00-14:00:00"
+time_format = "%R"
+style = "bg:lavender"
+format = '[[  $time ](fg:crust bg:lavender)]($style)'
+
+[cmd_duration]
+disabled = false
+min_time = 2000
+show_milliseconds = true
+style = "fg:overlay1"
+format = "[  in $duration ]($style)"
+show_notifications = true
+min_time_to_notify = 45000
+
+# Exit-Code nur anzeigen, wenn der letzte Befehl fehlgeschlagen ist
+[status]
+disabled = false
+symbol = "✖"
+style = "bold fg:red"
+format = '[ $symbol $status ]($style)'
+
+[line_break]
+disabled = false
+
+[character]
+disabled = false
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
+vimcmd_symbol = '[❮](bold fg:green)'
+vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
+vimcmd_replace_symbol = '[❮](bold fg:lavender)'
+vimcmd_visual_symbol = '[❮](bold fg:yellow)'
+
+
+# ── Farbpalette ───────────────────────────────────────────────────
+
+[palettes.catppuccin_macchiato]
+rosewater = "#f4dbd6"
+flamingo = "#f0c6c6"
+pink = "#f5bde6"
+mauve = "#c6a0f6"
+red = "#ed8796"
+maroon = "#ee99a0"
+peach = "#f5a97f"
+yellow = "#eed49f"
+green = "#a6da95"
+teal = "#8bd5ca"
+sky = "#91d7e3"
+sapphire = "#7dc4e4"
+blue = "#8aadf4"
+lavender = "#b7bdf8"
+text = "#cad3f5"
+subtext1 = "#b8c0e0"
+subtext0 = "#a5adcb"
+overlay2 = "#939ab7"
+overlay1 = "#8087a2"
+overlay0 = "#6e738d"
+surface2 = "#5b6078"
+surface1 = "#494d64"
+surface0 = "#363a4f"
+base = "#24273a"
+mantle = "#1e2030"
+crust = "#181926"
